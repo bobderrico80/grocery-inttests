@@ -1,0 +1,37 @@
+version: "2"
+services:
+  app:
+    image: node:10.6.0
+    user: node
+    working_dir: /home/node/app
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: debug
+      PORT: 8080
+      POSTGRES_CONNECTION_URL: postgres://grocery:grocery@postgres:5432/grocery
+    volumes:
+      - ../grocery-api:/home/node/app
+    links:
+      - postgres
+    command: "npm start"
+  postgres:
+    image: postgres:10.4
+    restart: always
+    environment:
+      POSTGRES_USER: grocery
+      POSTGRES_PASSWORD: grocery
+  test:
+    image: node:10.6.0
+    user: node
+    working_dir: /home/node/app
+    restart: 'no'
+    volumes:
+      - ./:/home/node/app
+    links:
+      - app
+    command: "./entrypoint.sh"
+
+
