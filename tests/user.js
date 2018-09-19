@@ -1,4 +1,3 @@
-const chakram = require('chakram');
 const { API_URL } = require('../lib/constants');
 const {
   assertResourceDeleted,
@@ -13,18 +12,12 @@ const {
 const { arrayOf } = require('../schemas/common');
 const schema = require('../schemas/user');
 
-const { expect } = chakram;
 const userRoute = `${API_URL}/user`;
 
 const postUser = post(userRoute);
 const getUser = get(userRoute);
 const putUser = put(userRoute);
 const deleteUser = del(userRoute);
-
-const createUser = async (newUser) => {
-  const response = await postUser(newUser);
-  expect(response).to.have.status(201);
-};
 
 describe('/user routes', () => {
   const newUser = {
@@ -81,7 +74,7 @@ describe('/user routes', () => {
     },
     {
       description: 'with multiple users',
-      setup: async () => createUser({ ...newUser, email: 'something@else.com' }),
+      setup: async () => postUser({ ...newUser, email: 'something@else.com' }),
       callEndpoint: () => getUser(),
       statusCode: 200,
       schema: arrayOf(schema),
@@ -156,7 +149,7 @@ describe('/user routes', () => {
       additionalAssertions: [assertResourceDeleted(state => deleteUser(state.allUsers[0].id))],
     },
     {
-      description: 'with non-existent user',
+      description: 'with a non-existent user',
       callEndpoint: () => deleteUser(0),
       statusCode: 404,
     },
