@@ -2,4 +2,5 @@
 describe('The grocery API', () => {
   require('./tests/app');
   require('./tests/user');
+  require('./tests/category');
 });

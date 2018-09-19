@@ -34,7 +34,7 @@ describe('/user routes', () => {
     name: 'Newer name',
   };
 
-  describeRestEndpoint('POST /user endpoint', [
+  describeRestEndpoint('POST /user', [
     {
       description: 'happy path',
       callEndpoint: () => postUser(newUser),
@@ -64,7 +64,7 @@ describe('/user routes', () => {
     },
   ]);
 
-  describeRestEndpoint('GET /user endpoint', [
+  describeRestEndpoint('GET /user', [
     {
       description: 'happy path',
       callEndpoint: () => getUser(),
@@ -146,7 +146,7 @@ describe('/user routes', () => {
       description: 'happy path',
       callEndpoint: state => deleteUser(state.allUsers[0].id),
       statusCode: 204,
-      additionalAssertions: [assertResourceDeleted(state => deleteUser(state.allUsers[0].id))],
+      additionalAssertions: [assertResourceDeleted(state => getUser(state.allUsers[0].id))],
     },
     {
       description: 'with a non-existent user',
