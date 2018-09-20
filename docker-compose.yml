@@ -1,4 +1,4 @@
-version: "2"
+version: '2'
 services:
   app:
     image: node:10.6.0
@@ -16,7 +16,7 @@ services:
       - ../grocery-api:/home/node/app
     links:
       - postgres
-    command: "npm start"
+    command: 'npm start'
   postgres:
     image: postgres:10.4
     restart: always
@@ -24,6 +24,7 @@ services:
       POSTGRES_USER: grocery
       POSTGRES_PASSWORD: grocery
   test:
+    tty: true
     image: node:10.6.0
     user: node
     working_dir: /home/node/app
@@ -32,6 +33,4 @@ services:
       - ./:/home/node/app
     links:
       - app
-    command: "./entrypoint.sh"
-
-
+    command: './entrypoint.sh'
