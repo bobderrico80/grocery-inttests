@@ -8,5 +8,6 @@ const properties = {
 module.exports = {
   type: 'object',
   properties,
+  additionalProperties: false,
   required: requireAll(properties),
 };

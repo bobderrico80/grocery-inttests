@@ -20,6 +20,8 @@ const putUser = put(userRoute);
 const deleteUser = del(userRoute);
 
 describe('/user routes', () => {
+  const password = 'P@$$w0rd';
+
   const newUser = {
     email: 'test@test.com',
     name: 'Test User',
@@ -37,29 +39,34 @@ describe('/user routes', () => {
   describeRestEndpoint('POST /user', [
     {
       description: 'happy path',
-      callEndpoint: () => postUser(newUser),
+      callEndpoint: () => postUser({ ...newUser, password }),
       statusCode: 201,
       responseBody: newUser,
       schema,
     },
     {
       description: 'with existing user',
-      callEndpoint: () => postUser(newUser),
+      callEndpoint: () => postUser({ ...newUser, password }),
       statusCode: 409,
     },
     {
       description: 'with invalid email address',
-      callEndpoint: () => postUser({ ...newUser, email: 'not.an.email' }),
+      callEndpoint: () => postUser({ ...newUser, password, email: 'not.an.email' }),
       statusCode: 400,
     },
     {
       description: 'with no email',
-      callEndpoint: () => postUser({ name: 'Just a name' }),
+      callEndpoint: () => postUser({ password, name: 'No Email' }),
       statusCode: 400,
     },
     {
       description: 'with no name',
-      callEndpoint: () => postUser({ email: 'test@test.com' }),
+      callEndpoint: () => postUser({ password, email: 'no@name.com' }),
+      statusCode: 400,
+    },
+    {
+      description: 'with no password',
+      callEndpoint: () => postUser({ name: 'No Password', email: 'no@password.com' }),
       statusCode: 400,
     },
   ]);
@@ -74,7 +81,7 @@ describe('/user routes', () => {
     },
     {
       description: 'with multiple users',
-      setup: async () => postUser({ ...newUser, email: 'something@else.com' }),
+      setup: async () => postUser({ ...newUser, password, email: 'something@else.com' }),
       callEndpoint: () => getUser(),
       statusCode: 200,
       schema: arrayOf(schema),
@@ -101,7 +108,7 @@ describe('/user routes', () => {
   describeRestEndpoint('PUT /user/:id', [
     {
       description: 'happy path',
-      callEndpoint: state => putUser(state.allUsers[0].id, updatedUser),
+      callEndpoint: state => putUser(state.allUsers[0].id, { password, ...updatedUser }),
       statusCode: 200,
       responseBody: updatedUser,
       schema,
@@ -125,13 +132,13 @@ describe('/user routes', () => {
     {
       description: 'with updating to a conflicting email',
       callEndpoint: state =>
-        putUser(state.allUsers[0].id, { ...updatedUser, email: 'something@else.com' }),
+        putUser(state.allUsers[0].id, { ...updatedUser, password, email: 'something@else.com' }),
       statusCode: 409,
     },
     {
       description: 'with invalid email address',
       callEndpoint: state =>
-        putUser(state.allUsers[0].id, { ...updatedUser, email: 'not.an.email' }),
+        putUser(state.allUsers[0].id, { ...updatedUser, password, email: 'not.an.email' }),
       statusCode: 400,
     },
     {
