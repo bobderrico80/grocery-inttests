@@ -77,14 +77,7 @@ describe('/user routes', () => {
       callEndpoint: () => getUser(),
       statusCode: 200,
       schema: arrayOf(schema),
-      additionalAssertions: [assertResponseLengthOf(1)],
-    },
-    {
-      description: 'with multiple users',
-      setup: async () => postUser({ ...newUser, password, email: 'something@else.com' }),
-      callEndpoint: () => getUser(),
-      statusCode: 200,
-      schema: arrayOf(schema),
+      // First user was created in auth test
       additionalAssertions: [assertResponseLengthOf(2)],
       saveToState: saveBodyToState('allUsers'),
     },
@@ -108,22 +101,23 @@ describe('/user routes', () => {
   describeRestEndpoint('PUT /user/:id', [
     {
       description: 'happy path',
-      callEndpoint: state => putUser(state.allUsers[0].id, { password, ...updatedUser }),
+      // Update the user we created in this test suite
+      callEndpoint: state => putUser(state.allUsers[1].id, { password, ...updatedUser }),
       statusCode: 200,
       responseBody: updatedUser,
       schema,
       additionalAssertions: [
-        assertResourceUpdated(state => getUser(state.allUsers[0].id), updatedUser),
+        assertResourceUpdated(state => getUser(state.allUsers[1].id), updatedUser),
       ],
     },
     {
       description: 'with partial property update behavior',
-      callEndpoint: state => putUser(state.allUsers[0].id, partiallyUpdatedUser),
+      callEndpoint: state => putUser(state.allUsers[1].id, partiallyUpdatedUser),
       statusCode: 200,
       responseBody: { ...updatedUser, ...partiallyUpdatedUser },
       schema,
       additionalAssertions: [
-        assertResourceUpdated(state => getUser(state.allUsers[0].id), {
+        assertResourceUpdated(state => getUser(state.allUsers[1].id), {
           ...updatedUser,
           ...partiallyUpdatedUser,
         }),
@@ -131,14 +125,15 @@ describe('/user routes', () => {
     },
     {
       description: 'with updating to a conflicting email',
+      // Attempt to change email to the user created in the auth test suite
       callEndpoint: state =>
-        putUser(state.allUsers[0].id, { ...updatedUser, password, email: 'something@else.com' }),
+        putUser(state.allUsers[1].id, { ...updatedUser, password, email: 'authorized@user.com' }),
       statusCode: 409,
     },
     {
       description: 'with invalid email address',
       callEndpoint: state =>
-        putUser(state.allUsers[0].id, { ...updatedUser, password, email: 'not.an.email' }),
+        putUser(state.allUsers[1].id, { ...updatedUser, password, email: 'not.an.email' }),
       statusCode: 400,
     },
     {
@@ -150,10 +145,11 @@ describe('/user routes', () => {
 
   describeRestEndpoint('DELETE /user/:id', [
     {
+      // Delete the user we created in this test
       description: 'happy path',
-      callEndpoint: state => deleteUser(state.allUsers[0].id),
+      callEndpoint: state => deleteUser(state.allUsers[1].id),
       statusCode: 204,
-      additionalAssertions: [assertResourceDeleted(state => getUser(state.allUsers[0].id))],
+      additionalAssertions: [assertResourceDeleted(state => getUser(state.allUsers[1].id))],
     },
     {
       description: 'with a non-existent user',

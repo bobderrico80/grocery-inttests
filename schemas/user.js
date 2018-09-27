@@ -1,14 +1,7 @@
-const { commonProperties, requireAll, stringType } = require('./common');
+const { commonProperties, createObjectType, stringType } = require('./common');
 
-const properties = {
+module.exports = createObjectType({
   ...commonProperties,
   email: stringType,
   name: stringType,
-};
-
-module.exports = {
-  type: 'object',
-  properties,
-  additionalProperties: false,
-  required: requireAll(properties),
-};
+});
