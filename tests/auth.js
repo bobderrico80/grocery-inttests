@@ -36,7 +36,7 @@ describe('/auth routes', () => {
       callEndpoint: () => login(credentials),
       statusCode: 200,
       schema: tokenSchema,
-      saveToState: response => ({ key: 'authToken', value: response.body.token }),
+      saveToState: { key: 'userToken', value: response => response.body.token },
     },
     {
       description: 'incorrect user',
