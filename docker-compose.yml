@@ -13,6 +13,8 @@ services:
       PORT: 8080
       POSTGRES_CONNECTION_URL: postgres://grocery:grocery@postgres:5432/grocery
       JWT_SECRET: FOR_TESTING_USE_ONLY
+      JWT_ISSUER: 'server'
+      JWT_AUDIENCE: 'client'
     volumes:
       - ../grocery-api:/home/node/app
     links:
